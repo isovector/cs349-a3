@@ -8,7 +8,11 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
+import java.util.Iterator;
 import java.util.LinkedList;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  *
@@ -16,17 +20,23 @@ import java.util.LinkedList;
  */
 public class Canvas extends javax.swing.JPanel {
     public enum Mode {
-        DRAW, SELECT
+        DRAW, SELECT, LASSO, ANIMATE
     }
+    
+    public LinkedList<Actor> actors = new LinkedList<Actor>();
+    public Actor currentActor;
     
     public LinkedList<Doodle> doodles = new LinkedList<Doodle>();
     public Doodle activeDoodle;
     public Mode mode = Mode.DRAW;
+    public int currentFrame = 0;
+    
     int startX, startY, lastX, lastY;
     
     Color white = new Color(0xFFFFFF);
     Color black = new Color(0);
     BasicStroke selectStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 1.0f, new float[] { 8.0f, 3.0f, 2.0f, 3.0f }, 0.0f);
+    AffineTransform identityTransform = new AffineTransform();
             
     /**
      * Creates new form Canvas
@@ -39,6 +49,48 @@ public class Canvas extends javax.swing.JPanel {
         mode = m;
     }
     
+    public void finishSelect() {
+        int x0 = Math.min(startX, lastX), x1 = Math.max(startX, lastX);
+        int y0 = Math.min(startY, lastY), y1 = Math.max(startY, lastY);
+        Rectangle r = new Rectangle(x0, y0, x1 - x0, y1 - y0);
+        
+        currentActor = new Actor();
+        
+        actors.add(currentActor);
+        
+        Iterator<Doodle> it = doodles.iterator();
+        doodleloop:
+        while (it.hasNext()) {
+            Doodle doodle = it.next();
+            for (Line line : doodle.lines) {
+                if (mode == Mode.SELECT) {
+                    if (!line.containedBy(r)) {
+                        continue doodleloop;
+                    }
+                } else {
+                    throw new NotImplementedException();
+                }
+            }
+            it.remove();
+            currentActor.doodles.add(doodle);
+        }
+        currentActor.finalize();
+    }
+    
+    public void clearNewActor() {
+        if (currentActor != null) {
+            if (!currentActor.committed) {
+                for (Doodle doodle : currentActor.doodles) {
+                    doodles.add(doodle);
+                }
+
+                actors.remove(currentActor);
+            }
+            
+            currentActor = null;
+        }
+    }
+    
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -47,6 +99,15 @@ public class Canvas extends javax.swing.JPanel {
         
         for (Doodle doodle : doodles) {
             doodle.paint(g);
+        }
+        
+        for (Actor actor : actors) {
+            actor.paint(g, currentFrame);
+            ((Graphics2D)g).setTransform(identityTransform);
+        }
+        
+        if (currentActor != null) {
+            currentActor.paintRect(g, currentFrame);
         }
         
         if (mode == Mode.SELECT) {
@@ -100,7 +161,14 @@ public class Canvas extends javax.swing.JPanel {
 
     
     private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
-        System.out.println(evt.getClickCount());
+        if (mode == Mode.SELECT) {
+            for (Actor actor : actors) {
+                if (actor.hitTest(currentFrame, new Vector2D(evt.getX(), evt.getY()))) {
+                    currentActor = actor;
+                    break;
+                }
+            }
+        }
     }//GEN-LAST:event_formMouseClicked
 
     private void formMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseDragged
@@ -111,13 +179,25 @@ public class Canvas extends javax.swing.JPanel {
         } else if (mode == Mode.SELECT) {
             lastX = evt.getX();
             lastY = evt.getY();
+        } else if (mode == Mode.ANIMATE && currentActor != null) {
+            if (!currentActor.committed) {
+                currentActor.commit(currentFrame);
+            }
+            
+            currentFrame++;
+            currentActor.moveTo(currentFrame, new Vector2D(evt.getX(), evt.getY()));
         }
+        
         repaint();
     }//GEN-LAST:event_formMouseDragged
 
     private void formMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMousePressed
         startX = evt.getX();
         startY = evt.getY();
+        
+        if (mode != Mode.ANIMATE) {
+            clearNewActor();
+        }
         
         if (mode == Mode.DRAW) {
             activeDoodle = new Doodle();
@@ -131,6 +211,10 @@ public class Canvas extends javax.swing.JPanel {
             lastX = evt.getX();
             lastY = evt.getY();
             
+            if (currentActor == null)
+            {
+                finishSelect();
+            }
             
             startX = startY = lastX = lastY = 0;
             

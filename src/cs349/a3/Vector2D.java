@@ -2,6 +2,7 @@ package cs349.a3;
 
 // from http://www.cs.duke.edu/courses/cps108/fall04/code/xooga/xooga/Vector2D.java
 
+import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.lang.Math;
 

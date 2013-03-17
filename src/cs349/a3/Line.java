@@ -2,6 +2,7 @@ package cs349.a3;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 
 public class Line {
     Color color;
@@ -23,5 +24,9 @@ public class Line {
     public void paint(Graphics g) {
         g.setColor(color);
         g.drawLine((int)source.x, (int)source.y, (int)dest.x, (int)dest.y);
+    }
+    
+    public boolean containedBy(Rectangle r) {
+        return r.contains(source) && r.contains(dest);
     }
 }
