@@ -222,19 +222,19 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_canvasMouseDragged
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        canvas.setMode(Canvas.Mode.DRAW);
+        canvas.setMode(Animation.Mode.DRAW);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        canvas.setMode(Canvas.Mode.SELECT);
+        canvas.setMode(Animation.Mode.SELECT);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        canvas.setMode(Canvas.Mode.LASSO);
+        canvas.setMode(Animation.Mode.LASSO);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        canvas.setMode(Canvas.Mode.ANIMATE);
+        canvas.setMode(Animation.Mode.ANIMATE);
     }//GEN-LAST:event_jButton4ActionPerformed
 
     boolean lockEvents = false;
@@ -245,14 +245,14 @@ public class MainWindow extends javax.swing.JFrame {
         
         if (timelineSlider.getValueIsAdjusting()) {
             if (ctrlDown) {
-                int diff = timelineSlider.getValue() - canvas.currentFrame;
+                int diff = timelineSlider.getValue() - canvas.animation.currentFrame;
                 if (diff > 0) {
                     lockEvents = true;
                     timelineSlider.setMaximum(timelineSlider.getMaximum() + 1);
                     lockEvents = false;
                 }
             } else {
-                canvas.currentFrame = timelineSlider.getValue();
+                canvas.animation.currentFrame = timelineSlider.getValue();
                 canvas.repaint();   
             }
         }
@@ -260,7 +260,7 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_timelineSliderStateChanged
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        canvas.setMode(Canvas.Mode.ERASE);
+        canvas.setMode(Animation.Mode.ERASE);
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void playPauseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playPauseButtonActionPerformed
