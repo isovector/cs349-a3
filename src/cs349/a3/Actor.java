@@ -7,6 +7,7 @@ package cs349.a3;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -17,15 +18,14 @@ public class Actor {
     public Path path;
     
     public LinkedList<Doodle> doodles = new LinkedList<Doodle>();
+    public Vector2D position = null;
+    public Vector2D origin = new Vector2D();
     public Vector2D size;
     public Rectangle boundingBox;
     public boolean committed = false;
     
-    public int firstFrame = 0;
-    public int lastFrame = 999999;
-    
     public void finalize() {
-        boundingBox = new Rectangle(99999, 99999, -99999, -99999);
+        boundingBox = new Rectangle(9999999, 9999999, -9999999, -9999999);
         
         for (Doodle doodle : doodles) {
             Rectangle bb = doodle.getBoundingBox();
@@ -43,14 +43,14 @@ public class Actor {
         boundingBox.height -= boundingBox.y;
         
         size = new Vector2D(boundingBox.width, boundingBox.height);
+        origin = size.scalarMult(0.5);
     }
     
     public void commit(int frame) {
         if (committed) {
             return;
         }
-        
-        firstFrame = frame;
+
         committed = true;
         
         path = new Path();
@@ -67,33 +67,56 @@ public class Actor {
         return false;
     }
     
+    public void record(boolean on, int frame) {
+        if (on) {
+            position = path.at(frame);
+            path.eraseAfter(frame);
+        } else {
+            moveTo(frame, position);
+            position = null;
+        }
+    }
+    
     public void moveTo(int frame, Vector2D pos) {
         path.add(new SpaceTime(frame, pos));
     }
     
     public void paint(Graphics g, int frame) {
-        if (frame < firstFrame || frame > lastFrame) {
-            return;
-        }
-        
         if (committed) {
-            Vector2D pos = path.at(frame);
+            Vector2D pos = (position != null) ? position : path.at(frame);
             g.translate((int)pos.x, (int)pos.y);
         }
         
         for (Doodle doodle : doodles) {
-            doodle.paint(g);
+            doodle.paint(g, frame);
         }
     }
     
     public void paintRect(Graphics g, int frame) {
         g.setColor(Color.RED);
         
+        int x,y;
+        int w = boundingBox.width; 
+        int h = boundingBox.height;
+        
         if (!committed) {
-            g.drawRect(boundingBox.x, boundingBox.y, boundingBox.width, boundingBox.height);
+            x = boundingBox.x;
+            y = boundingBox.y; 
         } else {
-            Vector2D pos = path.at(frame);
-            g.drawRect((int)pos.x, (int)pos.y, boundingBox.width, boundingBox.height);
+            Vector2D pos = (position != null) ? position : path.at(frame);
+            x = (int)pos.x;
+            y = (int)pos.y;
+        }
+        
+        g.drawRect(x, y, w, h);
+        g.fillOval(x + w / 2 - 5, y + h / 2 - 5, 10, 10);
+        g.drawOval(x + w / 2 - 10, y + h / 2 - 10, 20, 20);
+    }
+
+    void erase(int frame, Line line) {
+        line.toRelative(path.at(frame));
+        for (Doodle doodle : doodles) {
+            doodle.erase(frame, line);
         }
     }
 }

@@ -4,6 +4,7 @@
  */
 package cs349.a3;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -44,5 +45,16 @@ public class Path extends LinkedList<SpaceTime> {
         }
         
         return get(size() - 1).position;
+    }
+    
+    public void eraseAfter(int frame) {
+        Iterator<SpaceTime> it = iterator();
+        while (it.hasNext()) {
+            SpaceTime st = it.next();
+            
+            if (st.delta > frame) {
+                it.remove();
+            }
+        }
     }
 }

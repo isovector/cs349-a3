@@ -2,16 +2,23 @@ package cs349.a3;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.geom.Line2D;
 import java.util.LinkedList;
 
 public class Doodle {
     public LinkedList<Line> lines = new LinkedList<Line>();
+    public int firstFrame = 0;
+    public int lastFrame = 99999999;
     
     public void append(Line line) {
         lines.add(line);
     }
     
-    public void paint(Graphics g) {
+    public void paint(Graphics g, int frame) {
+        if (frame < firstFrame || frame >= lastFrame) {
+            return;
+        }
+        
         for (Line l : lines) {
             l.paint(g);
         }
@@ -19,8 +26,7 @@ public class Doodle {
     
     public void toRelative(Vector2D origin) {
         for (Line l : lines) {
-            l.source = l.source.minus(origin);
-            l.dest = l.dest.minus(origin);
+            l.toRelative(origin);
         }
     }
     
@@ -39,5 +45,28 @@ public class Doodle {
         bb.height -= bb.y;
         
         return bb;
+    }
+
+    boolean intersects(Line r) {
+        Line2D line1 = new Line2D.Double(r.source, r.dest), line2 = new Line2D.Double();
+        for (Line l : lines) {
+            line2.setLine(l.source, l.dest);
+            
+            if (line1.intersectsLine(line2)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    void erase(int frame, Line line) {
+        if (frame < firstFrame || frame >= lastFrame) {
+            return;
+        }
+        
+        if (intersects(line)) {
+            lastFrame = frame;    
+        }
     }
 }

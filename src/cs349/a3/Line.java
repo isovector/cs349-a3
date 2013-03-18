@@ -29,4 +29,9 @@ public class Line {
     public boolean containedBy(Rectangle r) {
         return r.contains(source) && r.contains(dest);
     }
+
+    void toRelative(Vector2D origin) {
+        source = source.minus(origin);
+        dest = dest.minus(origin);
+    }
 }

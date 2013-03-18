@@ -4,12 +4,22 @@
  */
 package cs349.a3;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.Timer;
+
 /**
  *
  * @author sandy
  */
 public class MainWindow extends javax.swing.JFrame {
 
+    Timer playTimer = new Timer(1000 / 24, new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+            timelineSlider.setValue(timelineSlider.getValue() + 1);
+        }
+    });
+    
     /**
      * Creates new form MainWindow
      */
@@ -28,6 +38,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         jToolBar1 = new javax.swing.JToolBar();
         jButton1 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
@@ -52,6 +63,17 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
         jToolBar1.add(jButton1);
+
+        jButton5.setText("⌫");
+        jButton5.setFocusable(false);
+        jButton5.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton5.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton5);
 
         jButton2.setText("❏");
         jButton2.setFocusable(false);
@@ -95,6 +117,11 @@ public class MainWindow extends javax.swing.JFrame {
         });
 
         playPauseButton.setText("▶");
+        playPauseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                playPauseButtonActionPerformed(evt);
+            }
+        });
 
         canvas.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -187,6 +214,19 @@ public class MainWindow extends javax.swing.JFrame {
         canvas.repaint();
     }//GEN-LAST:event_timelineSliderStateChanged
 
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        canvas.setMode(Canvas.Mode.ERASE);
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void playPauseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playPauseButtonActionPerformed
+        if (!playTimer.isRunning()) {
+            timelineSlider.setValue(0);
+            playTimer.start();
+        } else {
+            playTimer.stop();
+        }
+    }//GEN-LAST:event_playPauseButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -227,6 +267,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
