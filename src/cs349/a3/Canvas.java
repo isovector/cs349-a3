@@ -8,6 +8,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -61,9 +62,27 @@ public class Canvas extends javax.swing.JPanel {
     }
     
     public void finishSelect() {
-        int x0 = Math.min(startX, lastX), x1 = Math.max(startX, lastX);
-        int y0 = Math.min(startY, lastY), y1 = Math.max(startY, lastY);
-        Rectangle r = new Rectangle(x0, y0, x1 - x0, y1 - y0);
+        Rectangle r = null;
+        Polygon p = null;
+        if (mode == Mode.SELECT) {
+            int x0 = Math.min(startX, lastX), x1 = Math.max(startX, lastX);
+            int y0 = Math.min(startY, lastY), y1 = Math.max(startY, lastY);
+            r = new Rectangle(x0, y0, x1 - x0, y1 - y0);
+        } else if (mode == Mode.LASSO) {
+            int xs[] = new int[activeDoodle.lines.size()];
+            int ys[] = new int[activeDoodle.lines.size()];
+            
+            int i = 0;
+            for (Line l : activeDoodle.lines) {
+                xs[i] = (int)l.source.x;
+                ys[i] = (int)l.source.y;
+                ++i;
+            }
+            
+            p = new Polygon(xs, ys, xs.length);
+            activeDoodle = new Doodle();
+            activeDoodle.firstFrame = currentFrame;
+        }
         
         currentActor = new Actor();
         
@@ -79,7 +98,9 @@ public class Canvas extends javax.swing.JPanel {
                         continue doodleloop;
                     }
                 } else {
-                    throw new NotImplementedException();
+                    if (!line.containedBy(p)) {
+                        continue doodleloop;
+                    }
                 }
             }
             it.remove();
@@ -121,14 +142,21 @@ public class Canvas extends javax.swing.JPanel {
             currentActor.paintRect(g, currentFrame);
         }
         
-        if (mode == Mode.SELECT) {
+        if (mode == Mode.SELECT || mode == Mode.LASSO) {
             g.setColor(black);
             ((Graphics2D)g).setStroke(selectStroke);
             
-            int x0 = Math.min(startX, lastX), x1 = Math.max(startX, lastX);
-            int y0 = Math.min(startY, lastY), y1 = Math.max(startY, lastY);
-            
-            g.drawRect(x0, y0, x1 - x0, y1 - y0);
+            if (mode == Mode.SELECT) {
+                int x0 = Math.min(startX, lastX), x1 = Math.max(startX, lastX);
+                int y0 = Math.min(startY, lastY), y1 = Math.max(startY, lastY);
+
+                g.drawRect(x0, y0, x1 - x0, y1 - y0);
+            } else {
+                activeDoodle.paint(g, currentFrame);
+                if (activeDoodle.lines.size() > 2) {
+                    new Line(0, activeDoodle.lines.peekFirst().source, activeDoodle.lines.peekLast().dest).paint(g);
+                }
+            }
         }
     }
 
@@ -183,7 +211,7 @@ public class Canvas extends javax.swing.JPanel {
     }//GEN-LAST:event_formMouseClicked
 
     private void formMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseDragged
-        if (mode == Mode.DRAW) {
+        if (mode == Mode.DRAW || mode == Mode.LASSO) {
             activeDoodle.append(new Line(0, startX, startY, evt.getX(), evt.getY()));
             startX = evt.getX();
             startY = evt.getY();
@@ -227,15 +255,18 @@ public class Canvas extends javax.swing.JPanel {
             }
         }
         
-        if (mode == Mode.DRAW) {
+        if (mode == Mode.DRAW || mode == Mode.LASSO) {
             activeDoodle = new Doodle();
             activeDoodle.firstFrame = currentFrame;
-            doodles.add(activeDoodle);
+            
+            if (mode == Mode.DRAW) {
+                doodles.add(activeDoodle);
+            }
         }
     }//GEN-LAST:event_formMousePressed
 
     private void formMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseReleased
-        if (mode == Mode.SELECT) {
+        if (mode == Mode.SELECT || mode == Mode.LASSO) {
            
             lastX = evt.getX();
             lastY = evt.getY();
@@ -255,7 +286,7 @@ public class Canvas extends javax.swing.JPanel {
             currentActor.record(false, currentFrame);
         }
     }//GEN-LAST:event_formMouseReleased
-
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
 }

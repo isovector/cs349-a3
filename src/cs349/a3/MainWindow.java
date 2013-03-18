@@ -6,6 +6,7 @@ package cs349.a3;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyVetoException;
 import javax.swing.Timer;
 
 /**
@@ -14,6 +15,8 @@ import javax.swing.Timer;
  */
 public class MainWindow extends javax.swing.JFrame {
 
+    boolean ctrlDown = false;
+    
     Timer playTimer = new Timer(1000 / 24, new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
             timelineSlider.setValue(timelineSlider.getValue() + 1);
@@ -50,10 +53,19 @@ public class MainWindow extends javax.swing.JFrame {
         jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                formKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                formKeyReleased(evt);
+            }
+        });
 
         jToolBar1.setRollover(true);
 
-        jButton1.setText("✎");
+        jButton1.setText("✎ Draw");
+        jButton1.setToolTipText("");
         jButton1.setFocusable(false);
         jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -64,7 +76,7 @@ public class MainWindow extends javax.swing.JFrame {
         });
         jToolBar1.add(jButton1);
 
-        jButton5.setText("⌫");
+        jButton5.setText("⌫ Erase");
         jButton5.setFocusable(false);
         jButton5.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton5.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -75,7 +87,7 @@ public class MainWindow extends javax.swing.JFrame {
         });
         jToolBar1.add(jButton5);
 
-        jButton2.setText("❏");
+        jButton2.setText("❏ Rect");
         jButton2.setFocusable(false);
         jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -86,7 +98,7 @@ public class MainWindow extends javax.swing.JFrame {
         });
         jToolBar1.add(jButton2);
 
-        jButton3.setText("Ⴥ");
+        jButton3.setText("Ⴥ Lasso");
         jButton3.setFocusable(false);
         jButton3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -97,7 +109,7 @@ public class MainWindow extends javax.swing.JFrame {
         });
         jToolBar1.add(jButton3);
 
-        jButton4.setText("✢");
+        jButton4.setText("✢ Animate");
         jButton4.setFocusable(false);
         jButton4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton4.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -108,11 +120,27 @@ public class MainWindow extends javax.swing.JFrame {
         });
         jToolBar1.add(jButton4);
 
+        timelineSlider.setMaximum(24);
         timelineSlider.setMinorTickSpacing(1);
         timelineSlider.setPaintTicks(true);
+        timelineSlider.setSnapToTicks(true);
+        timelineSlider.setValue(0);
         timelineSlider.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 timelineSliderStateChanged(evt);
+            }
+        });
+        timelineSlider.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                timelineSliderKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                timelineSliderKeyReleased(evt);
+            }
+        });
+        timelineSlider.addVetoableChangeListener(new java.beans.VetoableChangeListener() {
+            public void vetoableChange(java.beans.PropertyChangeEvent evt)throws java.beans.PropertyVetoException {
+                timelineSliderVetoableChange(evt);
             }
         });
 
@@ -209,9 +237,26 @@ public class MainWindow extends javax.swing.JFrame {
         canvas.setMode(Canvas.Mode.ANIMATE);
     }//GEN-LAST:event_jButton4ActionPerformed
 
+    boolean lockEvents = false;
     private void timelineSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_timelineSliderStateChanged
-        canvas.currentFrame = timelineSlider.getValue();
-        canvas.repaint();
+        if (lockEvents) {
+            return;
+        }
+        
+        if (timelineSlider.getValueIsAdjusting()) {
+            if (ctrlDown) {
+                int diff = timelineSlider.getValue() - canvas.currentFrame;
+                if (diff > 0) {
+                    lockEvents = true;
+                    timelineSlider.setMaximum(timelineSlider.getMaximum() + 1);
+                    lockEvents = false;
+                }
+            } else {
+                canvas.currentFrame = timelineSlider.getValue();
+                canvas.repaint();   
+            }
+        }
+        
     }//GEN-LAST:event_timelineSliderStateChanged
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
@@ -226,6 +271,25 @@ public class MainWindow extends javax.swing.JFrame {
             playTimer.stop();
         }
     }//GEN-LAST:event_playPauseButtonActionPerformed
+
+    private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
+        
+    }//GEN-LAST:event_formKeyPressed
+
+    private void formKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyReleased
+        
+    }//GEN-LAST:event_formKeyReleased
+
+    private void timelineSliderKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_timelineSliderKeyPressed
+        ctrlDown = evt.isControlDown();
+    }//GEN-LAST:event_timelineSliderKeyPressed
+
+    private void timelineSliderKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_timelineSliderKeyReleased
+        ctrlDown = evt.isControlDown();
+    }//GEN-LAST:event_timelineSliderKeyReleased
+
+    private void timelineSliderVetoableChange(java.beans.PropertyChangeEvent evt)throws java.beans.PropertyVetoException {//GEN-FIRST:event_timelineSliderVetoableChange
+    }//GEN-LAST:event_timelineSliderVetoableChange
 
     /**
      * @param args the command line arguments

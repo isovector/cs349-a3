@@ -2,6 +2,7 @@ package cs349.a3;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Polygon;
 import java.awt.Rectangle;
 
 public class Line {
@@ -33,5 +34,9 @@ public class Line {
     void toRelative(Vector2D origin) {
         source = source.minus(origin);
         dest = dest.minus(origin);
+    }
+
+    boolean containedBy(Polygon p) {
+        return p.contains(source) && p.contains(dest);
     }
 }
