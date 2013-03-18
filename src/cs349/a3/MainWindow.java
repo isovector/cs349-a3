@@ -20,6 +20,11 @@ public class MainWindow extends javax.swing.JFrame {
     Timer playTimer = new Timer(1000 / 24, new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
             timelineSlider.setValue(timelineSlider.getValue() + 1);
+            canvas.animation.currentFrame = timelineSlider.getValue();
+            canvas.repaint();
+            if (timelineSlider.getValue() == timelineSlider.getMaximum()) {
+                setPlayback(false);
+            }
         }
     });
     
@@ -28,6 +33,7 @@ public class MainWindow extends javax.swing.JFrame {
      */
     public MainWindow() {
         initComponents();
+        canvas.slider = timelineSlider;
     }
 
     /**
@@ -42,17 +48,14 @@ public class MainWindow extends javax.swing.JFrame {
         jToolBar1 = new javax.swing.JToolBar();
         jButton1 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         timelineSlider = new javax.swing.JSlider();
         playPauseButton = new javax.swing.JButton();
         canvas = new cs349.a3.Canvas();
-        jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
-        jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("BEST ANIMATION PROGRAM");
         addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 formKeyPressed(evt);
@@ -86,17 +89,6 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
         jToolBar1.add(jButton5);
-
-        jButton2.setText("❏ Rect");
-        jButton2.setFocusable(false);
-        jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(jButton2);
 
         jButton3.setText("Ⴥ Lasso");
         jButton3.setFocusable(false);
@@ -144,7 +136,8 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
-        playPauseButton.setText("▶");
+        playPauseButton.setText(" ▶  ");
+        playPauseButton.setToolTipText("");
         playPauseButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 playPauseButtonActionPerformed(evt);
@@ -166,20 +159,12 @@ public class MainWindow extends javax.swing.JFrame {
         canvas.setLayout(canvasLayout);
         canvasLayout.setHorizontalGroup(
             canvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 776, Short.MAX_VALUE)
         );
         canvasLayout.setVerticalGroup(
             canvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 491, Short.MAX_VALUE)
+            .addGap(0, 512, Short.MAX_VALUE)
         );
-
-        jMenu1.setText("File");
-        jMenuBar1.add(jMenu1);
-
-        jMenu2.setText("Edit");
-        jMenuBar1.add(jMenu2);
-
-        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -189,7 +174,7 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(timelineSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 739, Short.MAX_VALUE)
+                        .addComponent(timelineSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 727, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(playPauseButton))
                     .addGroup(layout.createSequentialGroup()
@@ -225,16 +210,14 @@ public class MainWindow extends javax.swing.JFrame {
         canvas.setMode(Animation.Mode.DRAW);
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        canvas.setMode(Animation.Mode.SELECT);
-    }//GEN-LAST:event_jButton2ActionPerformed
-
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         canvas.setMode(Animation.Mode.LASSO);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        canvas.setMode(Animation.Mode.ANIMATE);
+        if (canvas.animation.currentActor != null) {
+            canvas.setMode(Animation.Mode.ANIMATE);
+        }
     }//GEN-LAST:event_jButton4ActionPerformed
 
     boolean lockEvents = false;
@@ -263,13 +246,19 @@ public class MainWindow extends javax.swing.JFrame {
         canvas.setMode(Animation.Mode.ERASE);
     }//GEN-LAST:event_jButton5ActionPerformed
 
-    private void playPauseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playPauseButtonActionPerformed
-        if (!playTimer.isRunning()) {
+    public void setPlayback(boolean on) {
+        if (on) {
             timelineSlider.setValue(0);
             playTimer.start();
+            playPauseButton.setText("❚❚");
         } else {
             playTimer.stop();
+            playPauseButton.setText(" ▶  ");
         }
+    }
+    
+    private void playPauseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playPauseButtonActionPerformed
+        setPlayback(!playTimer.isRunning());
     }//GEN-LAST:event_playPauseButtonActionPerformed
 
     private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
@@ -328,13 +317,9 @@ public class MainWindow extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private cs349.a3.Canvas canvas;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JButton playPauseButton;
     private javax.swing.JSlider timelineSlider;

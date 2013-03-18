@@ -4,19 +4,13 @@
  */
 package cs349.a3;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.AffineTransform;
-import java.util.Iterator;
-import java.util.LinkedList;
+import javax.swing.JSlider;
 import javax.swing.Timer;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  *
@@ -32,8 +26,16 @@ public class Canvas extends javax.swing.JPanel {
         public void actionPerformed(ActionEvent evt) {
             animation.currentActor.moveTo(animation.currentFrame, animation.currentActor.position);
             animation.currentFrame++;
+            if (animation.currentFrame > slider.getMaximum()) {
+                slider.setMaximum(animation.currentFrame);
+            }
+            
+            slider.setValue(animation.currentFrame);
+            slider.validate();
         }
     });
+    
+    public JSlider slider;
             
     /**
      * Creates new form Canvas
