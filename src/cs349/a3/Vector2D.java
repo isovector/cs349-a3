@@ -2,8 +2,8 @@ package cs349.a3;
 
 // from http://www.cs.duke.edu/courses/cps108/fall04/code/xooga/xooga/Vector2D.java
 
-import java.awt.Rectangle;
 import java.awt.geom.Point2D;
+import java.io.IOException;
 import java.lang.Math;
 
 /**
@@ -167,5 +167,12 @@ public class Vector2D extends Point2D.Double {
     /** @return Standard string representation of a vector: "<x, y>" */
     public String toString() {
         return "<" + x + ", " + y + ">";
+    }
+    
+    public void serialize(JsonWriter file) throws IOException {
+        file.writeObject();
+        file.write((int)x);
+        file.write((int)y);
+        file.closeObject();
     }
 }
