@@ -4,6 +4,7 @@ package cs349.a3;
 
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
+import java.io.IOException;
 import java.lang.Math;
 
 /**
@@ -13,7 +14,13 @@ import java.lang.Math;
  * @author Jadrian Miles
  * @version 20031122
  */
-public class Vector2D extends Point2D.Double {
+public class Vector2D extends Point2D.Double implements AnimSerializable {
+
+    @Override
+    public void serialize(AnimSerializer json) throws IOException {
+        x = json.serialize(x);
+        y = json.serialize(y);
+    }
 
     /*
      * (non-Javadoc)

@@ -6,6 +6,7 @@ package cs349.a3;
 
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -13,7 +14,7 @@ import java.util.LinkedList;
  *
  * @author sandy
  */
-public class Animation {
+public class Animation implements AnimSerializable {
     public enum Mode {
         DRAW, SELECT, LASSO, ANIMATE, ERASE
     }
@@ -25,6 +26,35 @@ public class Animation {
     public Actor currentActor;
     public Doodle activeDoodle;
     public int currentFrame = 0;
+    
+    @Override
+    public void serialize(AnimSerializer json) throws IOException {
+        if (json instanceof AnimWriter) {
+            json.serialize(actors.size());
+            for (Actor actor : actors) {
+                json.serialize(actor);
+            }
+            
+            json.serialize(doodles.size());
+            for (Doodle doodle : doodles) {
+                json.serialize(doodle);
+            }
+        } else {
+            int size = json.serialize(0);
+            for (int i = 0; i < size; ++i) {
+                Actor actor = new Actor();
+                json.serialize(actor);
+                actors.add(actor);
+            }
+            
+            size = json.serialize(0);
+            for (int i = 0; i < size; ++i) {
+                Doodle doodle = new Doodle();
+                json.serialize(doodle);
+                doodles.add(doodle);
+            }
+        }
+    }
     
     public void finishSelect(Rectangle r) { 
         currentActor = new Actor();

@@ -7,6 +7,7 @@ package cs349.a3;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -14,7 +15,7 @@ import java.util.LinkedList;
  *
  * @author sandy
  */
-public class Actor {
+public class Actor implements AnimSerializable {
     public Path path;
     
     public LinkedList<Doodle> doodles = new LinkedList<Doodle>();
@@ -23,6 +24,38 @@ public class Actor {
     public Vector2D size;
     public Rectangle boundingBox;
     public boolean committed = false;
+    
+    @Override
+    public void serialize(AnimSerializer json) throws IOException {
+        if (json instanceof AnimWriter) {
+            json.serialize(doodles.size());
+            for (Doodle doodle : doodles) {
+                json.serialize(doodle);
+            }
+            
+            json.serialize(path.size());
+            for (SpaceTime st : path) {
+                json.serialize(st);
+            }
+        } else {
+            int size = json.serialize(0);
+            for (int i = 0; i < size; ++i) {
+                Doodle doodle = new Doodle();
+                json.serialize(doodle);
+                doodles.add(doodle);
+            }
+            
+            path = new Path();
+            size = json.serialize(0);
+            for (int i = 0; i < size; ++i) {
+                SpaceTime st = new SpaceTime(0, new Vector2D());
+                json.serialize(st);
+                path.add(st);
+            }
+            
+            committed = true;
+        }
+    }
     
     public void finalize() {
         boundingBox = new Rectangle(9999999, 9999999, -9999999, -9999999);

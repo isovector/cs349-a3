@@ -6,7 +6,9 @@ package cs349.a3;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyVetoException;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import javax.swing.Timer;
 
 /**
@@ -50,6 +52,7 @@ public class MainWindow extends javax.swing.JFrame {
         jButton5 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
         timelineSlider = new javax.swing.JSlider();
         playPauseButton = new javax.swing.JButton();
         canvas = new cs349.a3.Canvas();
@@ -111,6 +114,17 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
         jToolBar1.add(jButton4);
+
+        jButton2.setText("jButton2");
+        jButton2.setFocusable(false);
+        jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton2);
 
         timelineSlider.setMaximum(24);
         timelineSlider.setMinorTickSpacing(1);
@@ -280,6 +294,18 @@ public class MainWindow extends javax.swing.JFrame {
     private void timelineSliderVetoableChange(java.beans.PropertyChangeEvent evt)throws java.beans.PropertyVetoException {//GEN-FIRST:event_timelineSliderVetoableChange
     }//GEN-LAST:event_timelineSliderVetoableChange
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        try {
+            //AnimWriter file = new AnimWriter(new BufferedWriter(new FileWriter(new File("/home/sandy/test.anim").getAbsoluteFile())));
+            
+            AnimReader file = new AnimReader(new BufferedReader(new FileReader(new File("/home/sandy/test.anim").getAbsoluteFile())));
+            
+            file.serialize(canvas.animation);
+            file.close();
+        } catch (Exception e) {
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -317,6 +343,7 @@ public class MainWindow extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private cs349.a3.Canvas canvas;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
