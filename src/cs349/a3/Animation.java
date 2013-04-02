@@ -6,7 +6,6 @@ package cs349.a3;
 
 import java.awt.Polygon;
 import java.awt.Rectangle;
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -79,23 +78,5 @@ public class Animation {
             
             currentActor = null;
         }
-    }
-    
-    public void serialize(JsonWriter file) throws IOException {
-        file.writeObject();
-        
-        file.writeObject("actors");
-        for (Actor a : actors) {
-            a.serialize(file);
-        }
-        file.closeObject();
-        
-        file.writeObject("doodles");
-        for (Doodle doodle : doodles) {
-            doodle.serialize(file);
-        }
-        file.closeObject();
-        
-        file.closeObject();
     }
 }

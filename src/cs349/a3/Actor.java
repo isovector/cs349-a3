@@ -7,7 +7,7 @@ package cs349.a3;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.io.IOException;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -118,23 +118,5 @@ public class Actor {
         for (Doodle doodle : doodles) {
             doodle.erase(frame, line);
         }
-    }
-    
-    public void serialize(JsonWriter file) throws IOException {
-        file.writeObject();
-
-        file.writeObject("doodles");
-        for (Doodle doodle : doodles) {
-            doodle.serialize(file);
-        }
-        file.closeObject();
-        
-        file.writeObject("path");
-        for (SpaceTime st : path) {
-            st.serialize(file);
-        }
-        file.closeObject();
-        
-        file.closeObject();
     }
 }

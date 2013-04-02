@@ -3,7 +3,6 @@ package cs349.a3;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.geom.Line2D;
-import java.io.IOException;
 import java.util.LinkedList;
 
 public class Doodle {
@@ -69,21 +68,5 @@ public class Doodle {
         if (intersects(line)) {
             lastFrame = frame;    
         }
-    }
-    
-    void serialize(JsonWriter file) throws IOException {
-        file.writeObject();
-        file.write("first", firstFrame);
-        file.write("last", lastFrame);
-
-        file.writeObject("points");
-        
-        lines.getFirst().source.serialize(file);
-        for (Line line : lines) {
-            line.dest.serialize(file);
-        }
-
-        file.closeObject();
-        file.closeObject();
     }
 }

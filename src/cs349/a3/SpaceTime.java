@@ -4,8 +4,6 @@
  */
 package cs349.a3;
 
-import java.io.IOException;
-
 /**
  *
  * @author sandy
@@ -17,12 +15,5 @@ public class SpaceTime {
     public SpaceTime(int delt, Vector2D pos) {
         position = pos;
         delta = delt;
-    }
-    
-    public void serialize(JsonWriter file) throws IOException {
-        file.writeObject();
-        file.write(delta);
-        position.serialize(file);
-        file.closeObject();
     }
 }

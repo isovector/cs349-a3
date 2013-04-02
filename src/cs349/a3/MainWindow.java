@@ -6,10 +6,8 @@ package cs349.a3;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileWriter;
-import javax.swing.JFileChooser;
+import java.beans.PropertyVetoException;
 import javax.swing.Timer;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -52,8 +50,6 @@ public class MainWindow extends javax.swing.JFrame {
         jButton5 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         timelineSlider = new javax.swing.JSlider();
         playPauseButton = new javax.swing.JButton();
         canvas = new cs349.a3.Canvas();
@@ -115,18 +111,6 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
         jToolBar1.add(jButton4);
-
-        jButton2.setText("Save to File");
-        jButton2.setFocusable(false);
-        jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(jButton2);
-        jToolBar1.add(filler1);
 
         timelineSlider.setMaximum(24);
         timelineSlider.setMinorTickSpacing(1);
@@ -296,23 +280,6 @@ public class MainWindow extends javax.swing.JFrame {
     private void timelineSliderVetoableChange(java.beans.PropertyChangeEvent evt)throws java.beans.PropertyVetoException {//GEN-FIRST:event_timelineSliderVetoableChange
     }//GEN-LAST:event_timelineSliderVetoableChange
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        JFileChooser file = new JFileChooser();
-        file.setDialogTitle("Save animation");
-        
-        file.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        file.setFileFilter(new FileNameExtensionFilter("Animations", "janim"));
-        
-        if (file.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-            try {
-                JsonWriter json = new JsonWriter(new FileWriter(file.getSelectedFile().getAbsoluteFile()));
-                canvas.animation.serialize(json);
-                json.close();
-            } catch (Exception e) {
-            }
-        }
-    }//GEN-LAST:event_jButton2ActionPerformed
-
     /**
      * @param args the command line arguments
      */
@@ -349,9 +316,7 @@ public class MainWindow extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private cs349.a3.Canvas canvas;
-    private javax.swing.Box.Filler filler1;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
