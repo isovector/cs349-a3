@@ -22,6 +22,6 @@ public class SpaceTime implements AnimSerializable {
     @Override
     public void serialize(AnimSerializer json) throws IOException {
         json.serialize(position);
-        json.serialize(delta);
+        delta = json.serialize(delta);
     }
 }

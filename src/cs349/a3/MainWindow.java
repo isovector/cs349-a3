@@ -7,9 +7,13 @@ package cs349.a3;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import javax.swing.JFileChooser;
 import javax.swing.Timer;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -52,6 +56,8 @@ public class MainWindow extends javax.swing.JFrame {
         jButton5 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 32767));
+        jButton6 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         timelineSlider = new javax.swing.JSlider();
         playPauseButton = new javax.swing.JButton();
@@ -114,8 +120,20 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
         jToolBar1.add(jButton4);
+        jToolBar1.add(filler1);
 
-        jButton2.setText("jButton2");
+        jButton6.setText("Save Anim");
+        jButton6.setFocusable(false);
+        jButton6.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton6.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton6);
+
+        jButton2.setText("Open Anim");
         jButton2.setFocusable(false);
         jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -295,16 +313,38 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_timelineSliderVetoableChange
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        try {
-            //AnimWriter file = new AnimWriter(new BufferedWriter(new FileWriter(new File("/home/sandy/test.anim").getAbsoluteFile())));
-            
-            AnimReader file = new AnimReader(new BufferedReader(new FileReader(new File("/home/sandy/test.anim").getAbsoluteFile())));
-            
-            file.serialize(canvas.animation);
-            file.close();
-        } catch (Exception e) {
+        JFileChooser filechoose = new JFileChooser();
+        filechoose.setDialogTitle("Open animation");
+        filechoose.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        filechoose.setFileFilter(new FileNameExtensionFilter("Animations", "janim")); 
+        
+        if (filechoose.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) { 
+            try {
+                AnimReader file = new AnimReader(new BufferedReader(new FileReader(filechoose.getSelectedFile().getAbsoluteFile())));
+
+                file.serialize(canvas.animation);
+                file.close();
+            } catch (Exception e) {
+            }
         }
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        JFileChooser filechoose = new JFileChooser();
+        filechoose.setDialogTitle("Save animation");
+        filechoose.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        filechoose.setFileFilter(new FileNameExtensionFilter("Animations", "janim")); 
+        
+        if (filechoose.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) { 
+            try {
+                AnimWriter file = new AnimWriter(new BufferedWriter(new FileWriter(filechoose.getSelectedFile().getAbsoluteFile())));
+
+                file.serialize(canvas.animation);
+                file.close();
+            } catch (Exception e) {
+            }
+        }
+    }//GEN-LAST:event_jButton6ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -342,11 +382,13 @@ public class MainWindow extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private cs349.a3.Canvas canvas;
+    private javax.swing.Box.Filler filler1;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JButton playPauseButton;
     private javax.swing.JSlider timelineSlider;
